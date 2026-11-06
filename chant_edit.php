@@ -28,7 +28,7 @@ while ($s = $req->fetch_assoc()) {
 	$c_s[] = $s;
 }
 if($id == 0 && array_key_exists('source', $_GET) && array_key_exists('page', $_GET)) {
-	$c_s[] = ['source' => intval($_GET['source']), 'page' => $_GET['page'], 'sequence' => 0, 'extent' => 1];
+	$c_s[] = ['source' => intval($_GET['source']), 'page' => trim($_GET['page']), 'sequence' => 0, 'extent' => 1];
 }
 $tags = array();
 $sql = 'SELECT * FROM '.db('chant_tags').' WHERE chant_id = '.$id;

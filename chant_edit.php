@@ -58,6 +58,54 @@ $(function(){
 $('a.add').relCopy({ append: removeLink});	
 });
 </script>
+<script type="text/javascript">
+$(function(){
+  $(document).on('input', 'input[name="tags[]"]', function(){
+    var input = this;
+    var wrapper = $(input).closest('.tag-suggestion');
+    var list = wrapper.find('.tag-suggestions');
+    clearTimeout($(input).data('tagSuggestionTimer'));
+    var query = $.trim(input.value);
+    if(!query) {
+      list.empty().hide();
+      input.setAttribute('aria-expanded', 'false');
+      return;
+    }
+    var timer = setTimeout(function(){
+      $.getJSON('tag_suggestions.php', {q: query})
+        .done(function(tags){
+          if($.trim(input.value) !== query) return;
+          list.empty();
+          $.each(tags, function(index, tag){
+            $('<li role="option"></li>')
+              .text(tag)
+              .on('mousedown', function(event){ event.preventDefault(); })
+              .on('click', function(){
+                input.value = tag;
+                list.hide();
+                input.setAttribute('aria-expanded', 'false');
+              })
+              .appendTo(list);
+          });
+          list.toggle(tags.length > 0);
+          input.setAttribute('aria-expanded', tags.length > 0 ? 'true' : 'false');
+        })
+        .fail(function(){
+          if($.trim(input.value) !== query) return;
+          list.text('Unable to load tag suggestions').show();
+          input.setAttribute('aria-expanded', 'true');
+        });
+    }, 200);
+    $(input).data('tagSuggestionTimer', timer);
+  });
+  $(document).on('click', function(event){
+    if(!$(event.target).closest('.tag-suggestion').length) {
+      $('.tag-suggestions').hide();
+      $('input[name="tags[]"]').attr('aria-expanded', 'false');
+    }
+  });
+});
+</script>
 HEADER;
 include('include/header.php');
 
@@ -309,14 +357,14 @@ if(!$logged_in) {
 	$i = 0;
 	foreach ($tags as $t) {
 		echo '<p class="clone3'.($i>0?' copy'.$i:'').'">';
-		echo '<input name="tags[]" value="'.$t.'" />';
+		echo '<span class="tag-suggestion"><input name="tags[]" value="'.$t.'" aria-autocomplete="list" aria-expanded="false" /><ul class="tag-suggestions" role="listbox"></ul></span>';
 		echo ($i>0?' <a class="remove" href="#" onclick="$(this).parent().slideUp(function(){ $(this).remove() }); return false"><img src="list-remove.png" alt="Remove" /></a>':'');
 		echo '</p>';
 		$i++;
 	}
 	if(count($tags) == 0) {
 		echo '<p class="clone3">';
-		echo '<input name="tags[]" />';
+		echo '<span class="tag-suggestion"><input name="tags[]" aria-autocomplete="list" aria-expanded="false" /><ul class="tag-suggestions" role="listbox"></ul></span>';
 		echo '</p>';
 	}
 	echo '<a href="#" class="add" rel=".clone3"><img src="list-add.png" alt="Add more" /></a>';

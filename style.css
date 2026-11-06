@@ -189,6 +189,41 @@ ul.incipit li {
     padding-right:7px;
 }
 
+.tag-suggestion {
+	position: relative;
+	display: inline-block;
+}
+
+.tag-suggestions {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 1000;
+	min-width: 100%;
+	max-height: 15em;
+	overflow-y: auto;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background: #fff;
+	border: solid 1px #999;
+}
+
+.tag-suggestions li {
+	display: block;
+	padding: 4px 8px;
+	color: #000;
+	font: inherit;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.tag-suggestions li:hover, .tag-suggestions li:focus {
+	background: #e6e6e6;
+}
+
 .ky:before, .ky:after {
     color: #085abd;
 }
